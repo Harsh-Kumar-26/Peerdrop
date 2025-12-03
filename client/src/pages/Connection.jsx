@@ -12,11 +12,20 @@ const Connection = () => {
     const socket = useSocket();
     const [localdes, setlocaldes]= useState(null);
     const [remotedes, setremotedes]= useState(null);
+
+    // const createroom=()=>{
+    //     const roomid=Math.random().toString(36).substring(2,10);
+    //     setroom(roomid);
+    // };
+
+    // useEffect(()=>{
+    //     createroom();
+    // },[]);
     
 
     
     useEffect(() => {
-  const handleIceCandidate = (event) => {
+    const handleIceCandidate = (event) => {
     const candidate = event.detail;
     socket.emit("ice-candidate", { candidate, roomId: room });
     console.log("Dispatching ICE candidate:", candidate);

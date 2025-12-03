@@ -7,7 +7,6 @@ class PeerService {
     this._initpeer();
     this.remoteCandidatesQueue = [];
     this.datatype = null;
-    this.filesize = null;
   }
 
   _initpeer() {
@@ -57,12 +56,10 @@ class PeerService {
               // Cleanup
               this.fileBuffer = [];
               this.datatype = null;
-              this.filesize = null;
             } else {
               // It's the metadata JSON
               try {
                 this.datatype = JSON.parse(data);
-                this.filesize = this.datatype?.size || null;
                 console.log("Receiving file:", this.datatype?.name);
               } catch (err) {
                 console.error("Failed to parse metadata", err);
