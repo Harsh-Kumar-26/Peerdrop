@@ -3,6 +3,7 @@ import peer from "../services/peer";
 import {useNavigate} from "react-router-dom";
 import {useSocket} from "../utils/SocketProvider";
 import { useCallback,useState, useEffect } from "react";
+import { use } from "react";
 
 
 const Connection = () => {
@@ -14,6 +15,32 @@ const Connection = () => {
     
 
     
+    useEffect(() => {
+  const handleIceCandidate = (event) => {
+    const candidate = event.detail;
+    socket.emit("ice-candidate", { candidate, roomId: room });
+    console.log("Dispatching ICE candidate:", candidate);
+  };
+
+  window.addEventListener("iceCandidate", handleIceCandidate);
+
+  return () => {
+    window.removeEventListener("iceCandidate", handleIceCandidate);
+  };
+}, [socket,room]);
+
+useEffect(()=>{
+const next_page=()=>{
+    navigate(`/transfer/${room}`);
+};
+
+window.addEventListener("peerConnected",next_page);
+
+return ()=>{
+    window.removeEventListener("peerConnected",next_page);
+}
+},[navigate,room]);
+
 
     const join=async(e)=>{
         e.preventDefault();
@@ -21,10 +48,9 @@ const Connection = () => {
             return;
         }
         socket.emit("join-room",room);
-        await peer.initIceCandidateHandler(socket, room);
-}
-
-const create_offer=async()=>{
+    }
+    
+    const create_offer=async()=>{
         const offer= await peer.getOffer();
         console.log("Offer: ",offer);
         setlocaldes(offer);
@@ -57,29 +83,28 @@ const handle_second_user = (data)=>{
         console.log("response: ",response);
     }
 
-    const handle_ice_candidate=async(data)=>{
-    console.log("Received ICE candidate:", data.candidate);
-    await peer.addIceCandidate(data.candidate);
+    const ice_reply=async(candidate)=>{
+        console.log("Received ICE candidate:", candidate);
+        await peer.addIceCandidate(candidate);
     }
-
-// useEffect(()=>{
-//     if(socket){        
-//         console.log("Room: ",room);
-//         peer.initIceCandidateHandler(socket, room);
-//     }
-//          },[socket,room]);
+useEffect(()=>{
+    peer.reset();
+},[]);
+    
 
 useEffect(()=>{
     socket.on("user-joined",handle_second_user);
     socket.on("offer",reply_offer);
     socket.on("answer",ans_res);
-    socket.on("ice-candidate",handle_ice_candidate);
+    socket.on("ice-candidate",ice_reply);
+    // socket.on("ice-candidate",handle_ice_candidate);
 
     return ()=>{
         socket.off("user-joined",handle_second_user);
         socket.off("offer",reply_offer);
         socket.off("answer",ans_res);
-        socket.on("ice-candidate",handle_ice_candidate);
+        socket.off("ice-candidate",ice_reply);
+        // socket.on("ice-candidate",handle_ice_candidate);
     }
 },[socket,handle_second_user,reply_offer,ans_res]);
 

@@ -6,7 +6,7 @@ export default defineConfig({
   base:"./",
   server: {
     proxy:{
-      '/api': `${import.meta.env.VITE_SOCKET_URL}`
+      '/api': `${process.env.PORT}`
     }
   },
   plugins: [react(), tailwindcss(),],

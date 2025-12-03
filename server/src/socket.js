@@ -42,15 +42,12 @@ export const initSocket = (server) => {
       });
     });
 
-
-      socket.on("ice-candidate", (data) => {
-        console.log("ice-candidate",data);
-        
-  socket.to(data.roomId).emit("ice-candidate", {
-    from: socket.id,
-    candidate: data.candidate,
-  });
-});
+    socket.on("ice-candidate",(data)=>{
+      console.log("ICE candidate from:", socket.id);
+      console.log("ICE candidate room:", data.roomId);
+      console.log("ICE candidate data:", data.candidate);
+      socket.to(data.roomId).emit("ice-candidate", data.candidate);
+    });
 
 
     socket.on("disconnect", () => {
