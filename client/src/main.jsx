@@ -4,7 +4,7 @@ import './index.css'
 import { createBrowserRouter,RouterProvider } from 'react-router-dom'
 import Connection from './pages/Connection.jsx'
 import Transfer from './pages/Transfer.jsx'
-import { SocketProvider } from './utils/SocketProvider.jsx'
+import { SocketProvider } from './utils/Socketprovider.jsx'
 
 const router=createBrowserRouter(
   [

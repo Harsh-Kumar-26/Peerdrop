@@ -1,7 +1,7 @@
 import React from "react";
 import peer from "../services/peer";
 import {useNavigate} from "react-router-dom";
-import {useSocket} from "../utils/SocketProvider";
+import {useSocket} from "../utils/Socketprovider";
 import { useCallback,useState, useEffect } from "react";
 import { use } from "react";
 
