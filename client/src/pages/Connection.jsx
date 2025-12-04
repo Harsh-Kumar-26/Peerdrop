@@ -11,27 +11,20 @@ const Connection = () => {
     const navigate = useNavigate();
     const socket = useSocket();
     
-    // UI States
     const [room, setRoom] = useState("");
     const [copied, setCopied] = useState(false);
     const [status, setStatus] = useState("Idle");
-    const [mode, setMode] = useState("initial"); // initial, creating, joining
-
-    // --- LOGIC HANDLERS ---
-
-    // 1. Generate & Join Room Automatically
+    const [mode, setMode] = useState("initial"); 
     const handleCreateRoom = () => {
-        const newRoomId = Math.random().toString(36).substring(2, 9); // 7 chars
+        const newRoomId = Math.random().toString(36).substring(2, 9);
         setRoom(newRoomId);
         setMode("creating");
         
-        // Join immediately (using variable, not state, to avoid async issues)
         console.log("Creating and joining room:", newRoomId);
         setStatus(`Waiting for peer in room: ${newRoomId}`);
         socket.emit("join-room", newRoomId);
     };
 
-    // 2. Join Existing Room
     const handleJoinRoom = (e) => {
         e.preventDefault();
         const cleanRoom = room.trim();
@@ -44,14 +37,12 @@ const Connection = () => {
         socket.emit("join-room", cleanRoom);
     };
 
-    // 3. Copy to Clipboard
     const copyToClipboard = () => {
         navigator.clipboard.writeText(room);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     };
 
-    // --- SOCKET & PEER LOGIC (Preserved & Memoized) ---
 
     const create_offer = useCallback(async () => {
         setStatus("Creating Offer...");
@@ -81,14 +72,12 @@ const Connection = () => {
         await peer.addIceCandidate(candidate);
     }, []);
 
-    // Navigation on Connect
     useEffect(() => {
         const next_page = () => navigate(`/transfer/${room}`);
         window.addEventListener("peerConnected", next_page);
         return () => window.removeEventListener("peerConnected", next_page);
     }, [navigate, room]);
 
-    // ICE Candidate Emission
     useEffect(() => {
         const handleIceCandidate = (event) => {
             const candidate = event.detail;
@@ -98,7 +87,6 @@ const Connection = () => {
         return () => window.removeEventListener("iceCandidate", handleIceCandidate);
     }, [socket, room]);
 
-    // Socket Listeners
     useEffect(() => {
         socket.on("user-joined", handle_second_user);
         socket.on("offer", reply_offer);
@@ -113,26 +101,22 @@ const Connection = () => {
         };
     }, [socket, handle_second_user, reply_offer, ans_res, ice_reply]);
 
-    // Reset Peer on Mount
+    
     useEffect(() => {
         peer.reset();
     }, []);
 
 
-    // --- RENDER UI ---
     return (
         <div className="min-h-screen min-w-screen bg-gray-950 text-white w-full overflow-x-hidden font-sans selection:bg-blue-500/30">
-            {/* Background Decor */}
             <div className="fixed top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
                 <div className="absolute top-[-10%] left-[-10%] w-[40rem] h-[40rem] bg-blue-600/20 rounded-full mix-blend-screen filter blur-[128px] opacity-30 animate-blob"></div>
                 <div className="absolute top-[-10%] right-[-10%] w-[40rem] h-[40rem] bg-purple-600/20 rounded-full mix-blend-screen filter blur-[128px] opacity-30 animate-blob animation-delay-2000"></div>
                 <div className="absolute bottom-[-20%] left-[20%] w-[40rem] h-[40rem] bg-cyan-600/20 rounded-full mix-blend-screen filter blur-[128px] opacity-30 animate-blob animation-delay-4000"></div>
             </div>
 
-            {/* Main Content Container */}
             <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-6 w-full">
                 
-                {/* Hero Section */}
                 <div className="w-full max-w-md mx-auto mb-12 text-center mt-3">
                     <motion.div 
                         initial={{ opacity: 0, y: -20 }}
@@ -154,7 +138,6 @@ const Connection = () => {
                     </motion.div>
                 </div>
 
-                {/* Main Interactive Card */}
                 <motion.div 
                     layout
                     initial={{ opacity: 0, scale: 0.95 }}
@@ -164,7 +147,6 @@ const Connection = () => {
                 >
                     <AnimatePresence mode="wait">
                         
-                        {/* VIEW 1: INITIAL CHOICE */}
                         {mode === "initial" && (
                             <motion.div
                                 key="initial"
@@ -195,7 +177,6 @@ const Connection = () => {
                                     <div className="flex-grow border-t border-gray-700/50"></div>
                                 </div>
 
-                                {/* Option B: Join */}
                                 <form onSubmit={handleJoinRoom} className="space-y-4">
                                     <div className="group relative">
                                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -221,7 +202,6 @@ const Connection = () => {
                             </motion.div>
                         )}
 
-                        {/* VIEW 2: WAITING / CREATED */}
                         {mode === "creating" && (
                             <motion.div
                                 key="creating"
@@ -276,7 +256,6 @@ const Connection = () => {
                             </motion.div>
                         )}
 
-                        {/* VIEW 3: JOINING LOADING */}
                         {mode === "joining" && (
                             <motion.div
                                 key="joining"
@@ -304,7 +283,6 @@ const Connection = () => {
                     </AnimatePresence>
                 </motion.div>
 
-                {/* Footer Status Badge */}
                 <motion.div 
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -317,13 +295,11 @@ const Connection = () => {
                     </div>
                 </motion.div>
 
-                {/* Scroll Down Indicator */}
                 
             </div>
 
             
 
-            {/* SECTION 2: HOW IT WORKS */}
             <div className="relative z-10 w-full bg-gray-950 border-t border-gray-900 py-24 px-6">
                 <div className="max-w-5xl mx-auto">
                     <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
@@ -348,7 +324,6 @@ const Connection = () => {
                         />
                     </div>
 
-                    {/* STEPS */}
                     <div className="bg-gray-900/50 rounded-3xl p-8 md:p-12 border border-gray-800">
                         <div className="grid md:grid-cols-2 gap-12 items-center">
                             <div>
@@ -369,7 +344,6 @@ const Connection = () => {
                 </div>
             </div>
 
-            {/* FOOTER */}
             <footer className="relative z-10 w-full bg-black py-12 px-6 border-t border-gray-900">
                 <div className="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
                     <div className="text-center md:text-left">
@@ -377,7 +351,6 @@ const Connection = () => {
                         <p className="text-sm text-gray-500">Secure P2P File Transfer Protocol</p>
                     </div>
                     
-                    {/* Placeholder for your info */}
                     <div className="text-center md:text-right text-gray-400 text-sm space-y-1">
                         <p>Developed by <span className="text-white font-medium">Harsh Kumar</span></p>
                         <p className="hover:text-blue-400 cursor-pointer transition-colors">harshkumar010377@gmail.com</p>
@@ -389,7 +362,6 @@ const Connection = () => {
     );
 }
 
-// Sub-components for cleaner code
 const FeatureCard = ({ icon, title, desc }) => (
     <div className="p-6 rounded-2xl bg-gray-900/50 border border-gray-800 hover:bg-gray-800/50 transition-colors">
         <div className="text-3xl mb-4">{icon}</div>

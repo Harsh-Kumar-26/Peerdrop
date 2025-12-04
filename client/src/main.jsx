@@ -20,9 +20,7 @@ const router=createBrowserRouter(
 );
 
 createRoot(document.getElementById('root')).render(
-  // <StrictMode>
     <SocketProvider>
     <RouterProvider router={router}/>
     </SocketProvider>
-  // </StrictMode>,
 )

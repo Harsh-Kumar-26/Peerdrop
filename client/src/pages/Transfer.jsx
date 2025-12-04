@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
-import peer from "../services/peer.js"; // Explicit extension added to fix resolution error
+import peer from "../services/peer.js"; 
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
-// Inline Icons to avoid dependency issues
 const Icons = {
     Upload: () => (
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-12 h-12 text-blue-400">
@@ -36,7 +35,6 @@ const Transfer = () => {
     const { roomid } = useParams();
     const navigate = useNavigate();
     
-    // UI States
     const [msg, setmsg] = useState("Connected via WebRTC");
     const [selectedFile, setSelectedFile] = useState(null);
     const [receivedFile, setReceivedFile] = useState(null);
@@ -44,7 +42,6 @@ const Transfer = () => {
     const [isSending, setIsSending] = useState(false);
     const [isReceiving, setIsReceiving] = useState(false);
 
-    // 1. Listen for incoming files
     useEffect(() => {
         const handleReceive = (event) => {
             const { blob, fileName } = event.detail;
@@ -71,7 +68,6 @@ const Transfer = () => {
         };
     }, []);
 
-    // 2. Handle Sending
     const handleSend = async () => {
         if (!selectedFile) return;
 
@@ -94,13 +90,11 @@ const Transfer = () => {
     return (
         <div className="min-h-screen min-w-screen bg-gray-950 text-white w-full font-sans selection:bg-blue-500/30 overflow-x-hidden flex flex-col">
             
-            {/* Background Decor */}
             <div className="fixed top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
                 <div className="absolute top-[-10%] left-[-10%] w-[40rem] h-[40rem] bg-blue-600/20 rounded-full mix-blend-screen filter blur-[128px] opacity-30 animate-blob"></div>
                 <div className="absolute bottom-[-20%] right-[-10%] w-[40rem] h-[40rem] bg-purple-600/20 rounded-full mix-blend-screen filter blur-[128px] opacity-30 animate-blob animation-delay-4000"></div>
             </div>
 
-            {/* Navbar */}
             <nav className="relative z-20 w-full p-6 flex justify-between items-center max-w-6xl mx-auto">
                 <button 
                     onClick={() => navigate('/')}
@@ -117,7 +111,6 @@ const Transfer = () => {
                 </div>
             </nav>
 
-            {/* Main Content */}
             <main className="relative z-10 flex-grow flex flex-col items-center justify-center p-6 w-full max-w-4xl mx-auto">
                 
                 <motion.div 
@@ -125,7 +118,6 @@ const Transfer = () => {
                     animate={{ opacity: 1, y: 0 }}
                     className="w-full grid md:grid-cols-2 gap-8"
                 >
-                    {/* SEND CARD */}
                     <div className="bg-gray-900/60 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl flex flex-col items-center text-center h-full">
                         <div className="mb-6 p-4 bg-blue-500/10 rounded-2xl border border-blue-500/20">
                             <Icons.Upload />
@@ -165,7 +157,6 @@ const Transfer = () => {
                             </motion.button>
                         )}
 
-                        {/* SENDING PROGRESS */}
                         {isSending && (
                             <div className="w-full mt-8 space-y-2">
                                 <div className="flex justify-between text-xs font-bold uppercase tracking-wider text-blue-400">
@@ -183,14 +174,9 @@ const Transfer = () => {
                         )}
                     </div>
 
-                    {/* RECEIVE CARD */}
                     <div className="bg-gray-900/60 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl flex flex-col items-center text-center h-full relative overflow-hidden">
                         
-                        {/* Status Overlay */}
                         <div className="absolute top-4 right-4">
-                            {/* <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${isReceiving ? 'bg-green-900/30 text-green-400 border border-green-800' : 'bg-gray-800 text-gray-400 border border-gray-700'}`}>
-                                {isReceiving ? 'Receiving Data...' : 'Standby'}
-                            </span> */}
                         </div>
 
                         <div className="mb-6 p-4 bg-purple-500/10 rounded-2xl border border-purple-500/20">
@@ -199,7 +185,6 @@ const Transfer = () => {
                         <h2 className="text-2xl font-bold text-white mb-2">Receive File</h2>
                         <p className="text-gray-400 text-sm mb-8">{msg}</p>
 
-                        {/* RECEIVING PROGRESS */}
                         {isReceiving && (
                             <div className="w-full mt-auto mb-8 space-y-2">
                                 <div className="flex justify-between text-xs font-bold uppercase tracking-wider text-purple-400">
@@ -216,7 +201,6 @@ const Transfer = () => {
                             </div>
                         )}
 
-                        {/* DOWNLOAD BUTTON */}
                         {receivedFile && !isReceiving && (
                             <motion.div 
                                 initial={{ scale: 0.9, opacity: 0 }}
@@ -247,7 +231,6 @@ const Transfer = () => {
 
             </main>
 
-            {/* Footer */}
             <footer className="relative z-10 w-full bg-black py-12 px-6 border-t border-gray-900 mt-12">
                 <div className="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
                     <div className="text-center md:text-left">
@@ -255,7 +238,6 @@ const Transfer = () => {
                         <p className="text-sm text-gray-500">Secure P2P File Transfer Protocol</p>
                     </div>
                     
-                    {/* Placeholder for your info */}
                     <div className="text-center md:text-right text-gray-400 text-sm space-y-1">
                         <p>Developed by <span className="text-white font-medium">Harsh Kumar</span></p>
                         <p className="hover:text-blue-400 cursor-pointer transition-colors">harshkumar010377@gmail.com</p>

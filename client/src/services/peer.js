@@ -45,18 +45,15 @@ class PeerService {
         console.log("Received Remote Data Channel");
         this.receiveChannel = event.channel;
         
-        // IMPORTANT: Force the channel to give us ArrayBuffers (raw bytes)
         this.receiveChannel.binaryType = "arraybuffer"; 
 
         this.receiveChannel.onmessage = (event) => {
           const data = event.data;
           
-          // String messages (Metadata or EOF) are handled normally
           if (typeof data === "string") {
             if (data === "EOF") {
               console.log("File transfer done");
               
-              // Reassemble the file from the ArrayBuffers
               const file = new Blob(this.fileBuffer, { type: this.datatype?.type });
               
               window.dispatchEvent(
@@ -68,11 +65,9 @@ class PeerService {
                 })
               );
               
-              // Cleanup
               this.fileBuffer = [];
               this.datatype = null;
             } else {
-              // It's the metadata JSON
               try {
                 this.datatype = JSON.parse(data);
                 console.log("Receiving file:", this.datatype?.name);
@@ -81,7 +76,6 @@ class PeerService {
               }
             }
           } else {
-            // It's a binary chunk (ArrayBuffer), add it to our buffer
             this.fileBuffer.push(data);
           }
         };
@@ -126,7 +120,6 @@ class PeerService {
       return console.error("Connection not ready to send files");
     }
 
-    // 1. Send Metadata
     const metadata = JSON.stringify({
       name: file.name,
       type: file.type,
@@ -134,7 +127,6 @@ class PeerService {
     });
     this.dataChannel.send(metadata);
 
-    // 2. Send File Chunks
     const CHUNK_SIZE = 16 * 1024; 
     console.log(`Sending file: ${file.name} (${file.size} bytes)`);
 
@@ -143,20 +135,17 @@ class PeerService {
     while (offset < file.size) {
       const chunk = file.slice(offset, offset + CHUNK_SIZE);
       
-      // CRITICAL FIX: Convert Blob to ArrayBuffer before sending
       const buffer = await chunk.arrayBuffer(); 
       
       this.dataChannel.send(buffer);
       
       offset += CHUNK_SIZE;
 
-      // Progress callback
       if (onProgress) {
         const percentage = Math.round((Math.min(offset, file.size) / file.size) * 100);
           onProgress(percentage);
       }
       
-      // Backpressure handling to prevent crash
       const MAX_BUFFER_AMOUNT = 1 * 1024 * 1024; // 1MB
       if (this.dataChannel.bufferedAmount > MAX_BUFFER_AMOUNT) {
         while (this.dataChannel.bufferedAmount > MAX_BUFFER_AMOUNT) {
@@ -165,7 +154,6 @@ class PeerService {
       }
     }
 
-    // 3. Send End of File
     this.dataChannel.send("EOF"); 
     console.log("File sent successfully");
   }
