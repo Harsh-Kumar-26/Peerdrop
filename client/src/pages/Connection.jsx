@@ -120,9 +120,10 @@ useEffect(()=>{
 
     return (
         <>
-            
+            <form onSubmit={join} style={{display:"flex",alignItems:"center",justifyContent:"center",marginTop:"20px"}}>
             <input onChange={(e)=>setroom(e.target.value)} placeholder="RoomID" style={{backgroundColor:"white", color:"black",padding:"10px"}}/>
-            <button onClick={join} style={{padding:"10px",marginLeft:"10px",backgroundColor:"blue",color:"white"}}>Enter Room</button>
+            <button type="submit" style={{padding:"10px",marginLeft:"10px",backgroundColor:"blue",color:"white"}}>Enter Room</button>
+            </form>
             <div>{room}</div>
                     <h4>Local Description:</h4>
                    <h4>{localdes ? JSON.stringify(localdes, null, 2) : "Not yet created"}</h4>
