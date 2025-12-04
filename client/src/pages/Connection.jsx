@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import peer from "../services/peer.js";
 import { useNavigate } from "react-router-dom";
-import { useSocket } from "../utils/SocketProvider.jsx"; // Fixed import
+import { useSocket } from "../utils/Socketprovider.jsx"; 
 import { motion, AnimatePresence } from "framer-motion";
 import { FaCopy, FaCheck, FaWifi, FaNetworkWired, FaLock, FaBolt, FaGlobe } from "react-icons/fa";
 import { IoMdRocket } from "react-icons/io";
