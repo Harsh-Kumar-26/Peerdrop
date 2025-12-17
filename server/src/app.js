@@ -5,6 +5,9 @@ import errorHandler from "./middlewares/error.middleware.js";
 import rateLimit from "express-rate-limit";
 
 const app=express();
+app.get("/health", (req, res) => {
+  res.status(200).send("OK");
+});
 app.use(cors({
     origin:process.env.CORS_ORIGIN || "*",
     credentials:true

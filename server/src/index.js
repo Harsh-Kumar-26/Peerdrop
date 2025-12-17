@@ -6,11 +6,6 @@ import {initSocket} from "./socket.js";
 
 dotenv.config();
 
-app.get("/health", (req, res) => {
-  res.status(200).send("OK");
-});
-
-
 const server = createServer(app);
 console.log("Socket server created");
 
